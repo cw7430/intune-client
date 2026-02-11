@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const signUpRequestSchema = z.object({
+export const nativeSignUpRequestSchema = z.object({
   email: z
     .string()
     .min(1, '이메일 입력해주세요.')
@@ -16,4 +16,4 @@ export const signUpRequestSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE'], '성별을 선택하여주세요'),
 });
 
-export type SignUpRequestDto = z.infer<typeof signUpRequestSchema>;
+export type NativeSignUpRequestDto = z.infer<typeof nativeSignUpRequestSchema>;

@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
+import { Navigation } from '@/widgets';
+
 export default async function HomeLayout({
   children,
 }: Readonly<{
@@ -12,5 +14,10 @@ export default async function HomeLayout({
     redirect('/auth');
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <Navigation />
+      {children}
+    </>
+  );
 }

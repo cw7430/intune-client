@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const signInRequestSchema = z.object({
+export const nativeSignInRequestSchema = z.object({
   email: z
     .string()
     .min(1, '이메일 입력해주세요.')
@@ -9,4 +9,4 @@ export const signInRequestSchema = z.object({
   isAuto: z.boolean(),
 });
 
-export type SignInRequestDto = z.infer<typeof signInRequestSchema>;
+export type NativeSignInRequestDto = z.infer<typeof nativeSignInRequestSchema>;

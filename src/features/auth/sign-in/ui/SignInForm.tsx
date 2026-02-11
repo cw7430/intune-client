@@ -7,8 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 
 import {
-  signInRequestSchema,
-  type SignInRequestDto,
+  nativeSignInRequestSchema,
+  type NativeSignInRequestDto,
 } from '@/features/auth/sign-in/schema';
 import { useAppConfigStore } from '@/shared/stores';
 import { useAuthStore } from '@/entities/auth/stores';
@@ -23,7 +23,7 @@ import {
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { signInAction } from '@/features/auth/sign-in/actions';
+import { nativeSignInAction } from '@/features/auth/sign-in/actions';
 
 export default function SignInForm() {
   const router = useRouter();
@@ -33,8 +33,8 @@ export default function SignInForm() {
   const { isAutoSignIn, setAutoSignIn } = useAppConfigStore();
   const { signIn } = useAuthStore();
 
-  const signInForm = useForm<SignInRequestDto>({
-    resolver: zodResolver(signInRequestSchema),
+  const signInForm = useForm<NativeSignInRequestDto>({
+    resolver: zodResolver(nativeSignInRequestSchema),
     defaultValues: { email: '', password: '', isAuto: isAutoSignIn },
   });
 
@@ -49,12 +49,14 @@ export default function SignInForm() {
   const handleFormChange = () => {
     if (errors.root) {
       clearErrors('root');
+      clearErrors('email');
+      clearErrors('password');
     }
   };
 
-  const onSubmit: SubmitHandler<SignInRequestDto> = async (req) => {
+  const onSubmit: SubmitHandler<NativeSignInRequestDto> = async (req) => {
     setLoading(true);
-    const response = await signInAction(req);
+    const response = await nativeSignInAction(req);
 
     if (response.code !== 'SU') {
       setLoading(false);
@@ -163,7 +165,7 @@ export default function SignInForm() {
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin mr-2" />
           ) : (
-            'Sign In'
+            '로그인'
           )}
         </Button>
       </form>

@@ -1,6 +1,7 @@
 export const ResponseCode = {
   SUCCESS: 'SU',
   VALIDATION_ERROR: 'VE',
+  CUSTOM_VALIDATION_ERROR: 'CVE',
   UNAUTHORIZED: 'UA',
   LOGIN_ERROR: 'LGE',
   FORBIDDEN: 'FB',
@@ -11,4 +12,4 @@ export const ResponseCode = {
   INTERNAL_SERVER_ERROR: 'ISE',
 } as const;
 
-export type ResponseCode = typeof ResponseCode[keyof typeof ResponseCode];
+export type ResponseCode = (typeof ResponseCode)[keyof typeof ResponseCode];

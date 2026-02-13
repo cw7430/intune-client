@@ -1,19 +1,25 @@
 import { z } from 'zod';
 
-export const nativeSignUpRequestSchema = z.object({
-  email: z
-    .string()
-    .min(1, '이메일 입력해주세요.')
-    .pipe(z.email('이메일 형식이 올바르지 않습니다.')),
-  password: z
-    .string()
-    .min(1, '비밀번호를 입력해주세요.')
-    .regex(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-={}|:;"'<>,.?/~`]).{10,25}$/,
-      '비밀번호는 영문, 숫자, 특수문자를 포함하여 10~25자여야 합니다.',
-    ),
-  nickName: z.string().min(1, '닉네임을 입력해주세요.'),
-  gender: z.enum(['MALE', 'FEMALE'], '성별을 선택하여주세요'),
-});
+export const nativeSignUpRequestSchema = z
+  .object({
+    email: z
+      .string()
+      .min(1, '이메일 입력해주세요.')
+      .pipe(z.email('이메일 형식이 올바르지 않습니다.')),
+    password: z
+      .string()
+      .min(1, '비밀번호를 입력해주세요.')
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-={}|:;"'<>,.?/~`]).{10,25}$/,
+        '비밀번호는 영문, 숫자, 특수문자를 포함하여 10~25자여야 합니다.',
+      ),
+    confirmPassword: z.string().min(1, '비밀번호 확인을 입력해주세요.'),
+    nickName: z.string().min(1, '닉네임을 입력해주세요.'),
+    gender: z.enum(['MALE', 'FEMALE'], '성별을 선택하여주세요'),
+  })
+  .refine(({ password, confirmPassword }) => password === confirmPassword, {
+    error: '비밀번호가 일치하지 않습니다.',
+    path: ['confirmPassword'],
+  });
 
 export type NativeSignUpRequestDto = z.infer<typeof nativeSignUpRequestSchema>;

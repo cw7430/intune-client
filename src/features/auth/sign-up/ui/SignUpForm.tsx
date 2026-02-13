@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useForm, useWatch, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 
@@ -39,26 +39,30 @@ export default function SignUpForm() {
 
   const signUpForm = useForm<NativeSignUpRequestDto>({
     resolver: zodResolver(nativeSignUpRequestSchema),
-    defaultValues: { email: '', password: '', nickName: '', gender: undefined },
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      nickName: '',
+      gender: undefined,
+    },
   });
 
   const {
     handleSubmit,
     control,
     setError,
-    clearErrors,
     formState: { errors },
   } = signUpForm;
 
-  const handleFormChange = () => {
-    if (errors.root) {
-      clearErrors('root');
-      clearErrors('email');
-      clearErrors('password');
-      clearErrors('nickName');
-      clearErrors('gender');
-    }
-  };
+  const password = useWatch({ control, name: 'password' });
+  const confirmPassword = useWatch({ control, name: 'confirmPassword' });
+
+  const isMatch = password && confirmPassword && password === confirmPassword;
+  const isNotMatch =
+    password && confirmPassword && password !== confirmPassword;
 
   const onSubmit: SubmitHandler<NativeSignUpRequestDto> = async (req) => {
     setLoading(true);
@@ -71,6 +75,11 @@ export default function SignUpForm() {
         case 'DR':
           setError('email', {
             message: '이미 존재하는 이메일 입니다.',
+          });
+          break;
+        case 'CVE':
+          setError('confirmPassword', {
+            message: response.message,
           });
           break;
         case 'VE':
@@ -102,11 +111,7 @@ export default function SignUpForm() {
 
   return (
     <Form {...signUpForm}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        onChange={handleFormChange}
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={control}
           name="email"
@@ -114,11 +119,21 @@ export default function SignUpForm() {
             <FormItem>
               <FormLabel>이메일</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="hello@example.com"
-                  {...field}
-                  className="bg-secondary/50 border-white/5"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="hello@example.com"
+                    {...field}
+                    className="bg-secondary/50 border-white/5"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0 px-4 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary"
+                    // onClick={handleCheckDuplicate}
+                  >
+                    중복체크
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,6 +154,33 @@ export default function SignUpForm() {
                 />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem className="mb-6">
+              <FormLabel>비밀번호 확인</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="••••••"
+                  {...field}
+                  className="bg-secondary/50 border-white/5"
+                />
+              </FormControl>
+              <FormMessage
+                className={
+                  !errors.confirmPassword && isMatch ? 'text-emerald-500' : ''
+                }
+              >
+                {!errors.confirmPassword && isMatch && '비밀번호가 일치합니다.'}
+                {!errors.confirmPassword &&
+                  isNotMatch &&
+                  '비밀번호가 일치하지 않습니다.'}
+              </FormMessage>
             </FormItem>
           )}
         />

@@ -28,7 +28,7 @@ export const apiFailSchema = apiBaseSchema.extend({
   errors: z.array(validationErrorSchema).optional(),
 });
 
-export type ApiSuccessDtoWithSingle = z.infer<
+export type ApiSuccessDtoSingle = z.infer<
   typeof apiSuccessSchemaSchemaSingle
 >;
 
@@ -40,7 +40,7 @@ export type ApiFailDto = z.infer<typeof apiFailSchema>;
 
 export type ValidationErrorDto = z.infer<typeof validationErrorSchema>;
 
-export type ClientResponseDtoSingle = ApiSuccessDtoWithSingle | ApiFailDto;
+export type ClientResponseDtoSingle = ApiSuccessDtoSingle | ApiFailDto;
 
 export type ClientResponseDtoWithResult<T> =
   | ApiSuccessDtoWithResult<T>

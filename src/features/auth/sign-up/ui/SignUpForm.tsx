@@ -29,11 +29,13 @@ import {
 } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
 import { nativeSignUpAction } from '@/features/auth/sign-up/actions';
+import { CheckEmailButton } from '@/features/auth/check-email/ui';
 
 export default function SignUpForm() {
   const router = useRouter();
 
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [isEmailChecked, setEmailChecked] = useState<boolean>(false);
 
   const { signIn } = useAuthStore();
 
@@ -53,28 +55,42 @@ export default function SignUpForm() {
   const {
     handleSubmit,
     control,
+    trigger,
     setError,
+    clearErrors,
     formState: { errors },
   } = signUpForm;
 
+  const email = useWatch({ control, name: 'email' });
   const password = useWatch({ control, name: 'password' });
   const confirmPassword = useWatch({ control, name: 'confirmPassword' });
 
-  const isMatch = password && confirmPassword && password === confirmPassword;
-  const isNotMatch =
+  const isPasswordMatch =
+    password && confirmPassword && password === confirmPassword;
+  const isPasswordNotMatch =
     password && confirmPassword && password !== confirmPassword;
 
   const onSubmit: SubmitHandler<NativeSignUpRequestDto> = async (req) => {
     setLoading(true);
+    if (!isEmailChecked) {
+      setError('email', {
+        message: '이메일 중복체크를 해주세요',
+      });
+      setLoading(false);
+      return;
+    }
     const response = await nativeSignUpAction(req);
 
     if (response.code !== 'SU') {
-      setLoading(false);
-
       switch (response.code) {
         case 'DR':
           setError('email', {
             message: '이미 존재하는 이메일 입니다.',
+          });
+          break;
+        case 'CDR':
+          setError('email', {
+            message: response.message,
           });
           break;
         case 'CVE':
@@ -92,7 +108,7 @@ export default function SignUpForm() {
             message: '서버에서 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
           });
       }
-
+      setLoading(false);
       return;
     }
 
@@ -123,19 +139,33 @@ export default function SignUpForm() {
                   <Input
                     placeholder="hello@example.com"
                     {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setEmailChecked(false);
+                    }}
                     className="bg-secondary/50 border-white/5"
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="shrink-0 px-4 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary"
-                    // onClick={handleCheckDuplicate}
-                  >
-                    중복체크
-                  </Button>
+                  <CheckEmailButton
+                    email={email}
+                    setError={setError}
+                    clearErrors={clearErrors}
+                    trigger={trigger}
+                    isEmailChecked={isEmailChecked}
+                    setEmailChecked={setEmailChecked}
+                    setLoading={setLoading}
+                  />
                 </div>
               </FormControl>
-              <FormMessage />
+              <FormMessage
+                className={
+                  !errors.email && isEmailChecked ? 'text-emerald-500' : ''
+                }
+              >
+                {!errors.email && isEmailChecked && '사용 가능한 이메일입니다.'}
+                {!errors.email &&
+                  !isEmailChecked &&
+                  '이메일 중복체크를 해주세요.'}
+              </FormMessage>
             </FormItem>
           )}
         />
@@ -173,12 +203,16 @@ export default function SignUpForm() {
               </FormControl>
               <FormMessage
                 className={
-                  !errors.confirmPassword && isMatch ? 'text-emerald-500' : ''
+                  !errors.confirmPassword && isPasswordMatch
+                    ? 'text-emerald-500'
+                    : ''
                 }
               >
-                {!errors.confirmPassword && isMatch && '비밀번호가 일치합니다.'}
                 {!errors.confirmPassword &&
-                  isNotMatch &&
+                  isPasswordMatch &&
+                  '비밀번호가 일치합니다.'}
+                {!errors.confirmPassword &&
+                  isPasswordNotMatch &&
                   '비밀번호가 일치하지 않습니다.'}
               </FormMessage>
             </FormItem>

@@ -2,9 +2,9 @@
 
 import { cookies } from 'next/headers';
 
-import { SignOutRequestDto } from '@/features/auth/sign-out/schema';
+import { type SignOutRequestDto } from '@/features/auth/sign-out/schema';
 import { apiPost } from '@/shared/apis/configs/fetch-request';
-import { ApiSuccessDtoWithSingle } from '@/shared/apis/schemas';
+import { type ApiSuccessDtoSingle } from '@/shared/apis/schemas';
 
 export const signOutAction = async () => {
   const cookieStore = await cookies();
@@ -14,7 +14,7 @@ export const signOutAction = async () => {
   const body: SignOutRequestDto = { refreshToken };
 
   try {
-    await apiPost<ApiSuccessDtoWithSingle>('/auth/sign-out', body);
+    await apiPost<ApiSuccessDtoSingle>('/auth/sign-out', body);
   } catch (error) {
     console.error('Sign-out API call failed:', error);
   }

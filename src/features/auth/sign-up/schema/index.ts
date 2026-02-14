@@ -17,9 +17,14 @@ export const nativeSignUpRequestSchema = z
     nickName: z.string().min(1, '닉네임을 입력해주세요.'),
     gender: z.enum(['MALE', 'FEMALE'], '성별을 선택하여주세요'),
   })
-  .refine(({ password, confirmPassword }) => password === confirmPassword, {
-    error: '비밀번호가 일치하지 않습니다.',
-    path: ['confirmPassword'],
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '비밀번호가 일치하지 않습니다.',
+        path: ['confirmPassword'],
+      });
+    }
   });
 
 export type NativeSignUpRequestDto = z.infer<typeof nativeSignUpRequestSchema>;

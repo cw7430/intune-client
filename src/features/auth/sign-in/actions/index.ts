@@ -2,7 +2,7 @@
 
 import { clientResponseWithResult } from '@/shared/apis/configs';
 import { apiPost } from '@/shared/apis/configs/fetch-request';
-import { ApiSuccessDtoWithResult } from '@/shared/apis/schemas';
+import { type ApiSuccessDtoWithResult } from '@/shared/apis/schemas';
 import { type NativeSignInRequestDto } from '@/features/auth/sign-in/schema';
 import { type SignInAndRefreshResponseDtoForServer } from '@/features/auth/shared/schema';
 import { ApiError } from '@/shared/apis/configs';

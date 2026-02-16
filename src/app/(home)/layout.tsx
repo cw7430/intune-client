@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
 import { Navigation } from '@/widgets';
+import { AuthInitializer } from '@/features/auth/refresh/ui';
 
 export default async function HomeLayout({
   children,
@@ -16,6 +17,7 @@ export default async function HomeLayout({
 
   return (
     <>
+      <AuthInitializer />
       <Navigation />
       {children}
     </>

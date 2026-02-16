@@ -1,26 +1,32 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { AuthState } from '@/entities/auth/schemas';
+import type { AuthStateData, AuthState } from '@/entities/auth/schemas';
 
 const initialState = {
-  accessTokenExpiresAt: null,
+  accessTokenExpiresAtMs: null,
   nickName: null,
   gender: null,
   authType: null,
   authRole: null,
 };
 
-const validateAuthIntegrity = (state: AuthState): boolean => {
-  const { accessTokenExpiresAt, nickName, gender, authType, authRole } = state;
+const validateAuthIntegrity = (state: AuthStateData): boolean => {
+  const {
+    accessTokenExpiresAtMs,
+    nickName,
+    gender,
+    authType,
+    authRole,
+  } = state;
 
   return !!(
     nickName &&
     gender &&
     authType &&
     authRole &&
-    accessTokenExpiresAt &&
-    Date.now() + 30 * 1000 < accessTokenExpiresAt
+    accessTokenExpiresAtMs &&
+    Date.now() + 30 * 1000 < accessTokenExpiresAtMs
   );
 };
 
@@ -28,15 +34,20 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       ...initialState,
+
+      hasHydrated: false,
+
+      setHasHydrated: (v: boolean) => set({ hasHydrated: v }),
+
       signIn: (
-        accessTokenExpiresAt: number,
+        accessTokenExpiresAtMs: number,
         nickName: string,
         gender: 'MALE' | 'FEMALE',
         authType: 'NATIVE' | 'SOCIAL' | 'CROSS',
         authRole: 'USER' | 'ADMIN',
       ) =>
         set({
-          accessTokenExpiresAt,
+          accessTokenExpiresAtMs,
           nickName,
           gender,
           authType,
@@ -49,6 +60,18 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+
+      partialize: (state) => ({
+        accessTokenExpiresAtMs: state.accessTokenExpiresAtMs,
+        nickName: state.nickName,
+        gender: state.gender,
+        authType: state.authType,
+        authRole: state.authRole,
+      }),
+
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

@@ -21,7 +21,7 @@ export default function SignOutButton() {
       await signOutAction();
     } finally {
       signOut();
-      router.replace('/sign-in');
+      router.replace('/auth');
     }
   };
 

@@ -14,7 +14,7 @@ export const signInAndRefreshActions = async (
   const refreshMaxAge = result.isAuto
     ? Math.max(
         0,
-        Math.floor((result.refreshTokenExpiresAt - Date.now()) / 1000),
+        Math.floor((result.refreshTokenExpiresAtMs - Date.now()) / 1000),
       )
     : undefined;
 
@@ -41,7 +41,7 @@ export const signInAndRefreshActions = async (
 
   const {
     refreshToken: _refreshToken,
-    refreshTokenExpiresAt: _refreshTokenExpiresAt,
+    refreshTokenExpiresAtMs: _refreshTokenExpiresAtMs,
     isAuto: _isAuto,
     accessToken: _accessToken,
     ...clientData

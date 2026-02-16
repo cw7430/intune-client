@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const signInAndRefreshResponseSchemaForClient = z.object({
-  accessTokenExpiresAt: z.number(),
+  accessTokenExpiresAtMs: z.number(),
   nickName: z.string(),
   gender: z.enum(['MALE', 'FEMALE']),
   authType: z.enum(['NATIVE', 'SOCIAL', 'CROSS']),
@@ -12,7 +12,7 @@ export const signInAndRefreshResponseSchemaForServer =
   signInAndRefreshResponseSchemaForClient.extend({
     accessToken: z.string(),
     refreshToken: z.string(),
-    refreshTokenExpiresAt: z.number(),
+    refreshTokenExpiresAtMs: z.number(),
     isAuto: z.boolean(),
   });
 

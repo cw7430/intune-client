@@ -81,7 +81,7 @@ export default function SignInForm() {
     const responseData = response.result;
 
     signIn(
-      responseData.accessTokenExpiresAt,
+      responseData.accessTokenExpiresAtMs,
       responseData.nickName,
       responseData.gender,
       responseData.authType,

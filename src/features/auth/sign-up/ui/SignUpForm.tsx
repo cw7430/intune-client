@@ -115,7 +115,7 @@ export default function SignUpForm() {
     const responseData = response.result;
 
     signIn(
-      responseData.accessTokenExpiresAt,
+      responseData.accessTokenExpiresAtMs,
       responseData.nickName,
       responseData.gender,
       responseData.authType,
@@ -162,7 +162,8 @@ export default function SignUpForm() {
                 }
               >
                 {!errors.email && isEmailChecked && '사용 가능한 이메일입니다.'}
-                {!errors.email &&
+                {email &&
+                  !errors.email &&
                   !isEmailChecked &&
                   '이메일 중복체크를 해주세요.'}
               </FormMessage>
